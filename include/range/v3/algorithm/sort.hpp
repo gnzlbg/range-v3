@@ -75,7 +75,7 @@ namespace ranges
             }
 
             template<typename I, typename Val, typename C, typename P>
-            inline I unguarded_partition(I begin, I end, Val const &pivot, C &pred, P &proj)
+            inline I unguarded_partition(I begin, I end, Val const pivot, C &pred, P &proj)
             {
                 while(true)
                 {
