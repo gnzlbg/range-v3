@@ -13,9 +13,10 @@ script: cmake
 #     the rest is only tested with ASAN=On.
 # - gcc 4.9, 5.0
 #
-matrix:
-  include:
-    # Test clang-3.4: C++11, Buidd=Debug/Release, ASAN=On/Off
+# matrix:
+  # include:
+
+ #  # Test clang-3.4: C++11, Buidd=Debug/Release, ASAN=On/Off
  #   - env: CLANG_VERSION=3.4 BUILD_TYPE=Debug CPP=11 ASAN=On LIBCXX=On
  #     os: linux
  #     compiler: clang34
@@ -171,6 +172,8 @@ matrix:
    #   addons: *gcc49
 
     # Test gcc-5.0: C++11/14, Build=Debug/Release, ASAN=Off
+matrix:
+  include:
     - env: GCC_VERSION=5 BUILD_TYPE=Debug CPP=11 ASAN=Off LIBCXX=Off
        os: linux
        addons: &gcc5
