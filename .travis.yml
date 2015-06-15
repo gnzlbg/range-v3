@@ -175,9 +175,9 @@ script: cmake
 matrix:
   include:
     - env: GCC_VERSION=5 BUILD_TYPE=Debug CPP=11 ASAN=Off LIBCXX=Off
-       os: linux
-       addons: &gcc5
-         apt:
+      os: linux
+      addons: &gcc5
+        apt:
            packages:
             - g++-5
             - gcc-5
