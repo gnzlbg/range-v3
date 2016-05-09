@@ -254,7 +254,7 @@ namespace ranges
             void ignore_unused(Ts &&...)
             {}
 
-#if defined(__GNUC__) && !defined(__clang__) && (__GNUC__ < 5)
+#if defined(__GNUC__) && (!defined(__clang__) || defined(__GLIBCXX__)) && (__GNUC__ < 5)
             template<typename T>
             struct is_trivially_copy_assignable
               : std::is_trivial<T>
