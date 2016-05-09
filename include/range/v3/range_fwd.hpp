@@ -274,15 +274,17 @@ namespace ranges
                 using std::is_trivially_move_assignable;
             #endif
 
-            #if defined(__clang__) && !defined(_LIBCPP_VERSION)
-                template<typename T>
-                using is_final = meta::bool_<__is_final(T)>;
-            #elif defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 5
+            #if RANGES_CXX_LIB_IS_FINAL > 0
+                #if defined(__clang__) && !defined(_LIBCPP_VERSION)
+                    template<typename T>
+                    using is_final = meta::bool_<__is_final(T)>;
+                #else
+                    using std::is_final;          
+                #endif
+            #else 
                 template<typename T>
                 using is_final = std::false_type;
-            #else
-                using std::is_final;
-            #endif
+            #endif 
 
             template<typename T>
             struct remove_rvalue_reference
