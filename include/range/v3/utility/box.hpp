@@ -129,7 +129,7 @@ namespace ranges
         static_assert(std::is_trivial<constant<int, 0>>::value, "Expected constant to be trivial");
 
         template<typename Element, typename Tag = Element,
-            bool Empty = std::is_empty<Element>::value && detail::is_final<Element>::value>
+            bool Empty = std::is_empty<Element>::value && !detail::is_final<Element>::value>
         struct box
         {
             Element value;
