@@ -254,24 +254,25 @@ namespace ranges
             void ignore_unused(Ts &&...)
             {}
 
-#if defined(__GNUC__) && (!defined(__clang__) || defined(__GLIBCXX__)) && (__GNUC__ < 5)
-            template<typename T>
-            struct is_trivially_copy_assignable
-              : std::is_trivial<T>
-            {};
+            #if defined(__clang__) && !defined(_LIBCPP_VERSION)
+                template<typename T>
+                using is_trivially_copy_assignable =
+                    meta::bool_<__is_trivally_assignable(T &, T const&)>;
 
-            template<typename T>
-            struct is_trivially_move_assignable
-              : std::is_trivial<T>
-            {};
-#else
-            template<typename T>
-            using is_trivially_copy_assignable = std::is_trivially_copy_assignable<T>;
+                template<typename T>
+                using is_trivially_move_assignable =
+                    meta::bool_<__is_trivally_assignable(T &, T &&)>;
+            #elif defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 5
+                template<typename T>
+                using is_trivially_copy_assignable = std::is_trivial<T>;
 
-            template<typename T>
-            using is_trivially_move_assignable = std::is_trivially_move_assignable<T>;
-#endif
-
+                template<typename T>
+                using is_trivially_move_assignable = std::is_trivial<T>;
+            #else
+                using std::is_trivially_copy_assignable;
+                using std::is_trivially_move_assignable;
+            #endif
+ 
             template<typename T>
             struct remove_rvalue_reference
             {

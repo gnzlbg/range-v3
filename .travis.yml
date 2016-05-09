@@ -215,7 +215,7 @@ matrix:
       os: linux
       addons: *clang38
 
-    - env: CLANG_VERSION=3.8 BUILD_TYPE=Release CPP=14 ASAN=Off LIBCXX=Off
+    - env: CLANG_VERSION=3.8 BUILD_TYPE=Release CPP=11 ASAN=Off LIBCXX=Off
       os: linux
       addons: *clang38
 
