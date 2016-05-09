@@ -255,14 +255,15 @@ namespace ranges
             {}
 
             #if defined(__clang__) && !defined(_LIBCPP_VERSION)
-                template<typename T>
-                using is_trivially_copy_assignable =
-                    meta::bool_<__is_trivally_assignable(T &, T const&)>;
-
-                template<typename T>
-                using is_trivially_move_assignable =
-                    meta::bool_<__is_trivally_assignable(T &, T &&)>;
-            #elif defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 5
+                template <class T, class Arg = T>
+                struct is_trivially_copy_assignable
+                  : meta::bool_<__is_trivially_assignable(T &, Arg const&)>
+                {};
+                template <class T, class Arg = T>
+                struct is_trivially_move_assignable
+                  : meta::bool_<__is_trivially_assignable(T &, Arg &&)>
+                {};  
+             #elif defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 5
                 template<typename T>
                 using is_trivially_copy_assignable = std::is_trivial<T>;
 
@@ -272,7 +273,17 @@ namespace ranges
                 using std::is_trivially_copy_assignable;
                 using std::is_trivially_move_assignable;
             #endif
- 
+
+            #if defined(__clang__) && !defined(_LIBCPP_VERSION)
+                template<typename T>
+                using is_final = meta::bool_<__is_final(T)>;
+            #elif defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 5
+                template<typename T>
+                using is_final = std::false_type;
+            #else
+                using std::is_final;
+            #endif
+
             template<typename T>
             struct remove_rvalue_reference
             {
