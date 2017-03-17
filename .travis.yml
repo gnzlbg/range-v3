@@ -133,6 +133,14 @@ matrix:
       os: linux
       addons: *clang5
 
+    - env: CLANG_VERSION=5.0 BUILD_TYPE=Release CPP=1z MSAN=On LIBCXX=On CLANG_MODULES=On
+      os: linux
+      addons: *clang5
+
+    - env: CLANG_VERSION=5.0 BUILD_TYPE=Release CPP=1z LSAN=On LIBCXX=On CLANG_MODULES=On
+      os: linux
+      addons: *clang5
+
     - env: CLANG_VERSION=5.0 BUILD_TYPE=Release CPP=11 ASAN=Off LIBCXX=Off CLANG_MODULES=On
       os: linux
       addons: *clang5
@@ -240,8 +248,9 @@ before_install:
   - which valgrind
   - $CXX --version
   - if [ "$ASAN" == "On" ]; then export SANITIZER=Address; fi
+  - if [ "$MSAN" == "On" ]; then export SANITIZER=Memory; fi
+  - if [ "$LSAN" == "On" ]; then export SANITIZER=LEAK; fi
   - if [ -n "$CLANG_VERSION" ]; then sudo PATH="${PATH}" CXX="$CXX" CC="$CC" ./install_libcxx.sh; fi
-
 
 install:
   - cd $CHECKOUT_PATH
@@ -253,12 +262,14 @@ install:
 
   - mkdir -p build
   - cd build
-  - if [ -n "$CLANG_VERSION" -a "$ASAN" == "On" ]; then CXX_FLAGS="${CXX_FLAGS} -fsanitize=address,undefined,integer -fno-omit-frame-pointer -fno-sanitize=unsigned-integer-overflow"; fi
-  - if [ -n "$GCC_VERSION" -a "$ASAN" == "On" ]; then CXX_FLAGS="${CXX_FLAGS} -fsanitize=address,undefined -fno-omit-frame-pointer"; fi
   - if [ -n "$CLANG_VERSION" ]; then CXX_FLAGS="${CXX_FLAGS} -D__extern_always_inline=inline"; fi
   - if [ "$LIBCXX" == "On" ]; then CXX_FLAGS="${CXX_FLAGS} -stdlib=libc++ -nostdinc++ -cxx-isystem /usr/include/c++/v1/ -Wno-unused-command-line-argument"; fi
   - if [ "$HEADERS" == "On" ]; then HEADER_CHECK=1; else HEADER_CHECK=0; fi
   - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CXX_FLAGS="${CXX_FLAGS}" -DCMAKE_EXE_LINKER_FLAGS="${CXX_LINKER_FLAGS}" -DRANGES_CXX_STD=$CPP -DRANGE_V3_NO_HEADER_CHECK=$HEADER_CHECK
+  - if [ -n "$CLANG_VERSION" -a "$ASAN" == "On" ]; then cmake .. -DRANGES_SANITIZE_ASAN; fi
+  - if [ -n "$GCC_VERSION" -a "$ASAN" == "On" ]; then cmake .. -DRANGES_SANITIZE_ASAN; fi
+  - if [ -n "$CLANG_VERSION" -a "$LSAN" == "On" ]; then cmake .. -DRANGES_SANITIZE_LEAK; fi
+  - if [ -n "$CLANG_VERSION" -a "$MSAN" == "On" ]; then cmake .. -DRANGES_SANITIZE_MSAN; fi
   - if [ "$CLANG_MODULES" == "On" ] && [ "$LIBCXX" == "On" ]; then cmake .. -DRANGES_MODULES=On -DRANGES_LIBCXX_MODULE="/usr/include/c++/v1/module.modulemap"; fi
   - make -j2 VERBOSE=1
 
