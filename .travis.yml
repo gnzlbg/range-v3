@@ -247,9 +247,8 @@ before_install:
   - which $CC
   - which valgrind
   - $CXX --version
-  - if [ "$ASAN" == "On" ]; then export SANITIZER=Address; fi
-  - if [ "$MSAN" == "On" ]; then export SANITIZER=Memory; fi
-  - if [ "$LSAN" == "On" ]; then export SANITIZER=LEAK; fi
+  - if [ "$ASAN" == "On" ]; then export SANITIZER="Address;Undefined"; fi
+  - if [ "$MSAN" == "On" ]; then export SANITIZER=MemoryWithOrigins; fi
   - if [ -n "$CLANG_VERSION" ]; then sudo PATH="${PATH}" CXX="$CXX" CC="$CC" ./install_libcxx.sh; fi
 
 install:
