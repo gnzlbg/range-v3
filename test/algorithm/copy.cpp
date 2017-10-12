@@ -14,8 +14,17 @@
 #include <algorithm>
 #include <range/v3/core.hpp>
 #include <range/v3/algorithm/copy.hpp>
+#include <range/v3/algorithm/equal.hpp>
 #include <range/v3/view/delimit.hpp>
 #include "../simple_test.hpp"
+
+RANGES_CXX14_CONSTEXPR
+bool test_constexpr_copy() {
+  int a[4] = {0, 0, 0, 0};
+  int b[4] = {1, 2, 3, 4};
+  ranges::copy(b, a);
+  return ranges::equal(b, a);
+}
 
 int main()
 {
@@ -66,6 +75,10 @@ int main()
         CHECK(res3.second == buf + std::strlen(sz));
         CHECK(std::strcmp(sz, buf) == 0);
     }
+
+#if RANGES_CXX_CONSTEXPR >= RANGES_CXX_CONSTEXPR_14
+    static_assert(test_constexpr_copy(), "");
+#endif
 
     return test_result();
 }
