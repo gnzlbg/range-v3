@@ -629,6 +629,7 @@ namespace ranges
               : Bind
               , pipeable<pipeable_binder<Bind>>
             {
+                constexpr
                 pipeable_binder(Bind bind)
                   : Bind(std::move(bind))
                 {}
@@ -640,6 +641,7 @@ namespace ranges
                 Pipe0 pipe0_;
                 Pipe1 pipe1_;
                 template<typename Arg>
+                constexpr
                 auto operator()(Arg && arg) const
                 RANGES_DECLTYPE_AUTO_RETURN
                 (
@@ -652,6 +654,7 @@ namespace ranges
         struct make_pipeable_fn
         {
             template<typename Fun>
+            constexpr
             detail::pipeable_binder<Fun> operator()(Fun fun) const
             {
                 return {std::move(fun)};
@@ -667,12 +670,14 @@ namespace ranges
                 std::is_lvalue_reference<T>,
                 std::reference_wrapper<meta::_t<std::remove_reference<T>>>,
                 T &&>>
+        constexpr
         U bind_forward(meta::_t<std::remove_reference<T>> &t) noexcept
         {
             return static_cast<U>(t);
         }
 
         template<typename T>
+        constexpr
         T && bind_forward(meta::_t<std::remove_reference<T>> &&t) noexcept
         {
             // This is to catch way sketchy stuff like: forward<int const &>(42)
@@ -714,6 +719,7 @@ namespace ranges
             // Default Pipe behavior just passes the argument to the pipe's function call
             // operator
             template<typename Arg, typename Pipe>
+            constexpr
             static auto pipe(Arg && arg, Pipe pipe)
             RANGES_DECLTYPE_AUTO_RETURN
             (
@@ -724,6 +730,7 @@ namespace ranges
         // Evaluate the pipe with an argument
         template<typename Arg, typename Pipe,
             CONCEPT_REQUIRES_(!is_pipeable<Arg>() && is_pipeable<Pipe>())>
+        constexpr
         auto operator|(Arg && arg, Pipe pipe)
         RANGES_DECLTYPE_AUTO_RETURN
         (
@@ -733,6 +740,7 @@ namespace ranges
         // Compose two pipes
         template<typename Pipe0, typename Pipe1,
             CONCEPT_REQUIRES_(is_pipeable<Pipe0>() && is_pipeable<Pipe1>())>
+        constexpr
         auto operator|(Pipe0 pipe0, Pipe1 pipe1)
         RANGES_DECLTYPE_AUTO_RETURN
         (
@@ -796,12 +804,14 @@ namespace ranges
         struct unwrap_reference_fn : pipeable<unwrap_reference_fn>
         {
             template<typename T, CONCEPT_REQUIRES_(!is_reference_wrapper<T>())>
+            constexpr
             T &&operator()(T &&t) const noexcept
             {
                 return static_cast<T&&>(t);
             }
             /// \overload
             template<typename T>
+            constexpr
             typename reference_wrapper<T>::reference
             operator()(reference_wrapper<T> t) const noexcept
             {
@@ -809,6 +819,7 @@ namespace ranges
             }
             /// \overload
             template<typename T>
+            constexpr
             T &operator()(std::reference_wrapper<T> t) const noexcept
             {
                 return t.get();
@@ -821,6 +832,30 @@ namespace ranges
 
         template<typename T>
         using unwrap_reference_t = decltype(unwrap_reference(std::declval<T>()));
+
+        /// \cond
+        namespace detail
+        {
+            // WORKAROUND: std::bind is not constexpr
+            template<typename Bind, typename Fun>
+            struct bind1 {
+                Bind bind_;
+                meta::if_<std::is_rvalue_reference<Fun>,
+                          meta::_t<std::remove_reference<Fun>>, Fun> fun_;
+
+                RANGES_CXX14_CONSTEXPR
+                bind1(Bind i, Fun f) : bind_(std::move(i)), fun_(std::move(f)) {}
+
+                template<class T>
+                RANGES_CXX14_CONSTEXPR
+                auto operator()(T&& t) const
+                RANGES_DECLTYPE_AUTO_RETURN
+                (
+                    bind_(std::forward<T>(t), unwrap_reference(fun_))
+                )
+            };
+        }
+        /// \endcond
 
         /// \cond
         namespace detail

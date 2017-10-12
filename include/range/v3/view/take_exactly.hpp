@@ -54,34 +54,40 @@ namespace ranges
                 difference_type_ n_;
 
             public:
-                take_exactly_view_() = default;
-                take_exactly_view_(Rng rng, difference_type_ n)
+                constexpr take_exactly_view_() = default;
+                constexpr take_exactly_view_(Rng rng, difference_type_ n)
                   : rng_(std::move(rng)), n_(n)
                 {
                     RANGES_EXPECT(n >= 0);
                 }
+                constexpr
                 counted_iterator<iterator_t<Rng>> begin()
                 {
                     return {ranges::begin(rng_), n_};
                 }
                 template<typename BaseRng = Rng,
                     CONCEPT_REQUIRES_(Range<BaseRng const>())>
+                constexpr
                 counted_iterator<iterator_t<BaseRng const>> begin() const
                 {
                     return {ranges::begin(rng_), n_};
                 }
+                constexpr
                 default_sentinel end() const
                 {
                     return {};
                 }
+                constexpr
                 range_size_type_t<Rng> size() const
                 {
                     return static_cast<range_size_type_t<Rng>>(n_);
                 }
+                constexpr
                 Rng & base()
                 {
                     return rng_;
                 }
+                constexpr
                 Rng const & base() const
                 {
                     return rng_;
@@ -97,41 +103,48 @@ namespace ranges
                 Rng rng_;
                 difference_type_ n_;
             public:
-                take_exactly_view_() = default;
-                take_exactly_view_(Rng rng, difference_type_ n)
+                constexpr take_exactly_view_() = default;
+                constexpr take_exactly_view_(Rng rng, difference_type_ n)
                   : rng_(std::move(rng)), n_(n)
                 {
                     RANGES_EXPECT(n >= 0);
                     RANGES_EXPECT(!SizedRange<Rng>() || n <= ranges::distance(rng_));
                 }
+                constexpr
                 iterator_t<Rng> begin()
                 {
                     return ranges::begin(rng_);
                 }
+                constexpr
                 iterator_t<Rng> end()
                 {
                     return next(ranges::begin(rng_), n_);
                 }
                 template<typename BaseRng = Rng,
                     CONCEPT_REQUIRES_(Range<BaseRng const>())>
+                constexpr
                 iterator_t<BaseRng const> begin() const
                 {
                     return ranges::begin(rng_);
                 }
                 template<typename BaseRng = Rng,
                     CONCEPT_REQUIRES_(Range<BaseRng const>())>
+                constexpr
                 iterator_t<BaseRng const> end() const
                 {
                     return next(ranges::begin(rng_), n_);
                 }
+                constexpr
                 range_size_type_t<Rng> size() const
                 {
                     return static_cast<range_size_type_t<Rng>>(n_);
                 }
+                constexpr
                 Rng & base()
                 {
                     return rng_;
                 }
+                constexpr
                 Rng const & base() const
                 {
                     return rng_;
@@ -153,6 +166,7 @@ namespace ranges
                 friend view_access;
 
                 template<typename Rng>
+                constexpr
                 static take_exactly_view<all_t<Rng>>
                 invoke_(Rng && rng, range_difference_type_t<Rng> n, concepts::InputRange*)
                 {
@@ -160,6 +174,7 @@ namespace ranges
                 }
                 template<typename Rng,
                     CONCEPT_REQUIRES_(!View<uncvref_t<Rng>>() && std::is_lvalue_reference<Rng>())>
+                constexpr
                 static iterator_range<iterator_t<Rng>>
                 invoke_(Rng && rng, range_difference_type_t<Rng> n, concepts::RandomAccessRange*)
                 {
@@ -168,14 +183,17 @@ namespace ranges
 
                 template<typename Int,
                     CONCEPT_REQUIRES_(Integral<Int>())>
+                constexpr
                 static auto bind(take_exactly_fn take_exactly, Int n)
                 RANGES_DECLTYPE_AUTO_RETURN
                 (
-                    make_pipeable(std::bind(take_exactly, std::placeholders::_1, n))
+                 //make_pipeable(std::bind(take_exactly, std::placeholders::_1, n))
+                     make_pipeable(detail::bind1<take_exactly_fn, Int>(take_exactly, n))
                 )
             #ifndef RANGES_DOXYGEN_INVOKED
                 template<typename Int,
                     CONCEPT_REQUIRES_(!Integral<Int>())>
+                constexpr
                 static detail::null_pipe bind(take_exactly_fn, Int)
                 {
                     CONCEPT_ASSERT_MSG(Integral<Int>(),
@@ -187,6 +205,7 @@ namespace ranges
             public:
                 template<typename Rng,
                     CONCEPT_REQUIRES_(InputRange<Rng>())>
+                constexpr
                 auto operator()(Rng && rng, range_difference_type_t<Rng> n) const
                 RANGES_DECLTYPE_AUTO_RETURN
                 (
@@ -196,6 +215,7 @@ namespace ranges
             #ifndef RANGES_DOXYGEN_INVOKED
                 template<typename Rng, typename T,
                     CONCEPT_REQUIRES_(!InputRange<Rng>())>
+                constexpr
                 void operator()(Rng &&, T &&) const
                 {
                     CONCEPT_ASSERT_MSG(InputRange<T>(),
