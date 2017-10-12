@@ -765,18 +765,21 @@ namespace ranges
         struct ref_fn : pipeable<ref_fn>
         {
             template<typename T, CONCEPT_REQUIRES_(!is_reference_wrapper_t<T>())>
+            constexpr
             reference_wrapper<T> operator()(T &t) const
             {
                 return {t};
             }
             /// \overload
             template<typename T>
+            constexpr
             reference_wrapper<T> operator()(reference_wrapper<T> t) const
             {
                 return t;
             }
             /// \overload
             template<typename T>
+            constexpr
             reference_wrapper<T> operator()(std::reference_wrapper<T> t) const
             {
                 return {t.get()};

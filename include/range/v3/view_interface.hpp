@@ -65,12 +65,14 @@ namespace ranges
           : basic_view<Cardinality>
         {
         protected:
+            constexpr
             Derived & derived()
             {
                 CONCEPT_ASSERT(DerivedFrom<Derived, view_interface>());
                 return static_cast<Derived &>(*this);
             }
             /// \overload
+            constexpr
             Derived const & derived() const
             {
                 CONCEPT_ASSERT(DerivedFrom<Derived, view_interface>());

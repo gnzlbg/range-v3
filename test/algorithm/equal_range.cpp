@@ -51,34 +51,37 @@ void not_totally_ordered()
 }
 
 template<class Iter, class Sent, class T, class Proj = ranges::ident>
-void
+RANGES_CXX14_CONSTEXPR
+bool
 test(Iter first, Sent last, const T& value, Proj proj = Proj{})
 {
     ranges::iterator_range<Iter, Iter> i =
         ranges::equal_range(first, last, value, ranges::ordered_less{}, proj);
     for (Iter j = first; j != i.begin(); ++j)
-        CHECK(ranges::invoke(proj, *j) < value);
+        if (!(ranges::invoke(proj, *j) < value)) { return false; }
     for (Iter j = i.begin(); j != last; ++j)
-        CHECK(!(ranges::invoke(proj, *j) < value));
+        if (ranges::invoke(proj, *j) < value) { return false; }
     for (Iter j = first; j != i.end(); ++j)
-        CHECK(!(value < ranges::invoke(proj, *j)));
+        if (value < ranges::invoke(proj, *j)) { return false; }
     for (Iter j = i.end(); j != last; ++j)
-        CHECK(value < ranges::invoke(proj, *j));
+        if (!(value < ranges::invoke(proj, *j))) { return false; }
 
     auto res = ranges::equal_range(
         ranges::make_iterator_range(first, last), value, ranges::ordered_less{}, proj);
     for (Iter j = first; j != res.get_unsafe().begin(); ++j)
-        CHECK(ranges::invoke(proj, *j) < value);
+        if (!(ranges::invoke(proj, *j) < value)) { return false; }
     for (Iter j = res.get_unsafe().begin(); j != last; ++j)
-        CHECK(!(ranges::invoke(proj, *j) < value));
+        if (ranges::invoke(proj, *j) < value) { return false; }
     for (Iter j = first; j != res.get_unsafe().end(); ++j)
-        CHECK(!(value < ranges::invoke(proj, *j)));
+        if (value < ranges::invoke(proj, *j)) { return false; }
     for (Iter j = res.get_unsafe().end(); j != last; ++j)
-        CHECK(value < ranges::invoke(proj, *j));
+        if (!(value < ranges::invoke(proj, *j))) { return false; }
+
+    return true;
 }
 
 template<class Iter, class Sent = Iter>
-void
+bool
 test()
 {
     using namespace ranges::view;
@@ -87,30 +90,42 @@ test()
     auto input = ints | take(100) | transform([](int i){return repeat_n(i,M);}) | join;
     ranges::copy(input, ranges::back_inserter(v));
     for (int x = 0; x <= (int)M; ++x)
-        test(Iter(v.data()), Sent(v.data()+v.size()), x);
+        if (!test(Iter(v.data()), Sent(v.data()+v.size()), x)) { return false; }
+
+    return true;
+}
+
+RANGES_CXX14_CONSTEXPR
+bool test_some() {
+    int d[] = {0, 1, 2, 3};
+    for (int e = 0; e <= 4; ++e)
+        for (int x = -1; x <= 4; ++x)
+          if (!test(d, &(d[e]), x)) { return false; }
+
+    return true;
 }
 
 int main()
 {
-    int d[] = {0, 1, 2, 3};
-    for (int* e = d; e <= d+4; ++e)
-        for (int x = -1; x <= 4; ++x)
-            test(d, e, x);
+    CHECK(test_some());
+#if RANGES_CXX_CONSTEXPR >= RANGES_CXX_CONSTEXPR_14
+    static_assert(test_some(), "");
+#endif
 
-    test<forward_iterator<const int*> >();
-    test<bidirectional_iterator<const int*> >();
-    test<random_access_iterator<const int*> >();
-    test<const int*>();
+    CHECK(test<forward_iterator<const int*> >());
+    CHECK(test<bidirectional_iterator<const int*> >());
+    CHECK(test<random_access_iterator<const int*> >());
+    CHECK(test<const int*>());
 
-    test<forward_iterator<const int*>, sentinel<const int*> >();
-    test<bidirectional_iterator<const int*>, sentinel<const int*> >();
-    test<random_access_iterator<const int*>, sentinel<const int*> >();
+    CHECK(test<forward_iterator<const int*>, sentinel<const int*> >());
+    CHECK(test<bidirectional_iterator<const int*>, sentinel<const int*> >());
+    CHECK(test<random_access_iterator<const int*>, sentinel<const int*> >());
 
     {
         struct foo { int i; };
 
         foo some_foos[] = {{1}, {2}, {4}};
-        test(some_foos, some_foos + 3, 2, &foo::i);
+        CHECK(test(some_foos, some_foos + 3, 2, &foo::i));
     }
 
     return ::test_result();

@@ -35,6 +35,7 @@ namespace ranges
                 Val& val_;
 
                 template<typename T>
+                constexpr
                 bool operator()(T&& t) const
                 {
                     return !invoke(pred_, val_, static_cast<T&&>(t));
@@ -42,6 +43,7 @@ namespace ranges
             };
 
             template<typename Pred, typename Val>
+            constexpr
             upper_bound_predicate<Pred, Val>
             make_upper_bound_predicate(Pred& pred, Val& val)
             {
@@ -61,6 +63,7 @@ namespace ranges
                 /// \pre `Rng` is a model of the `Range` concept
                 template<typename I, typename V2, typename C = ordered_less, typename P = ident,
                     CONCEPT_REQUIRES_(BinarySearchable<I, V2, C, P>())>
+                RANGES_CXX14_CONSTEXPR
                 I operator()(I begin, difference_type_t<I> d, V2 const &val, C pred = C{},
                     P proj = P{}) const
                 {
