@@ -47,6 +47,7 @@ namespace ranges
             template<bool IsConst>
             struct adaptor : adaptor_base
             {
+                constexpr
                 CI<IsConst> begin(meta::const_if_c<IsConst, take_view> &rng) const
                 {
                     return {ranges::begin(rng.base()), rng.n_};
@@ -56,34 +57,40 @@ namespace ranges
             template<bool IsConst>
             struct sentinel_adaptor : adaptor_base
             {
+                constexpr
                 bool empty(CI<IsConst> const &that, S<IsConst> const &sent) const
                 {
                     return 0 == that.count() || sent == that.base();
                 }
             };
 
+            constexpr
             adaptor<false> begin_adaptor()
             {
                 return {};
             }
+            constexpr
             sentinel_adaptor<false> end_adaptor()
             {
                 return {};
             }
             template<typename BaseRng = Rng,
                 CONCEPT_REQUIRES_(Range<BaseRng const>())>
+            constexpr
             adaptor<true> begin_adaptor()
             {
                 return {};
             }
             template<typename BaseRng = Rng,
                 CONCEPT_REQUIRES_(Range<BaseRng const>())>
+            constexpr
             sentinel_adaptor<true> end_adaptor() const
             {
                 return {};
             }
         public:
             take_view() = default;
+            RANGES_CXX14_CONSTEXPR
             take_view(Rng rng, range_difference_type_t<Rng> n)
               : view_adaptor<take_view<Rng>, Rng, finite>(std::move(rng)), n_{n}
             {
@@ -100,6 +107,7 @@ namespace ranges
 
                 template<typename Rng,
                     CONCEPT_REQUIRES_(!SizedRange<Rng>() && !is_infinite<Rng>())>
+                constexpr
                 static take_view<all_t<Rng>> invoke_(Rng && rng, range_difference_type_t<Rng> n)
                 {
                     return {all(static_cast<Rng&&>(rng)), n};
@@ -107,6 +115,7 @@ namespace ranges
 
                 template<typename Rng,
                     CONCEPT_REQUIRES_(SizedRange<Rng>() || is_infinite<Rng>())>
+                constexpr
                 static auto invoke_(Rng && rng, range_difference_type_t<Rng> n)
                 RANGES_DECLTYPE_AUTO_RETURN
                 (
@@ -116,14 +125,16 @@ namespace ranges
                 )
 
                 template<typename Int, CONCEPT_REQUIRES_(Integral<Int>())>
+                constexpr
                 static auto bind(take_fn take, Int n)
                 RANGES_DECLTYPE_AUTO_RETURN
                 (
-                    make_pipeable(std::bind(take, std::placeholders::_1, n))
+                    make_pipeable(detail::bind1<take_fn, Int>(take, n))
                 )
 
             #ifndef RANGES_DOXYGEN_INVOKED
                 template<typename Int, CONCEPT_REQUIRES_(!Integral<Int>())>
+                constexpr
                 static detail::null_pipe bind(take_fn, Int)
                 {
                     CONCEPT_ASSERT_MSG(Integral<Int>(),
@@ -134,6 +145,7 @@ namespace ranges
 
             public:
                 template<typename Rng, CONCEPT_REQUIRES_(InputRange<Rng>())>
+                constexpr
                 auto operator()(Rng && rng, range_difference_type_t<Rng> n) const
                 RANGES_DECLTYPE_AUTO_RETURN
                 (
@@ -142,6 +154,7 @@ namespace ranges
 
             #ifndef RANGES_DOXYGEN_INVOKED
                 template<typename Rng, typename T, CONCEPT_REQUIRES_(!InputRange<Rng>())>
+                RANGES_CXX14_CONSTEXPR
                 void operator()(Rng &&, T &&) const
                 {
                     CONCEPT_ASSERT_MSG(InputRange<Rng>(),

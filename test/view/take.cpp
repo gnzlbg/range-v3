@@ -12,6 +12,7 @@
 #include <list>
 #include <vector>
 #include <range/v3/core.hpp>
+#include <range/v3/algorithm/equal.hpp>
 #include <range/v3/view/iota.hpp>
 #include <range/v3/view/take.hpp>
 #include <range/v3/view/reverse.hpp>
@@ -19,6 +20,13 @@
 #include <range/v3/utility/copy.hpp>
 #include "../simple_test.hpp"
 #include "../test_utils.hpp"
+
+RANGES_CXX14_CONSTEXPR
+bool test_constexpr() {
+  int a[4] = {0, 1, 2, 3};
+  int b[3] = {0, 1, 2};
+  return ranges::equal(b, a | ranges::view::take(3));
+}
 
 int main()
 {
@@ -126,6 +134,10 @@ int main()
         auto rng = debug_input_view<int const>{rgi} | view::take(6);
         ::check_equal(rng, {0, 1, 2, 3, 4, 5});
     }
+
+#if RANGES_CXX_CONSTEXPR >= RANGES_CXX_CONSTEXPR_14
+    static_assert(test_constexpr(), "");
+#endif
 
     return test_result();
 }
