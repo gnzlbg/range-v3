@@ -37,6 +37,7 @@ namespace ranges
                 indices_fn() = default;
 
                 template<typename Val, CONCEPT_REQUIRES_(Integral<Val>())>
+                constexpr
                 auto operator()(Val from, Val to) const
                 RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
                 (
@@ -46,6 +47,7 @@ namespace ranges
 
                 template<typename Val, typename Self = indices_fn,
                     CONCEPT_REQUIRES_(Integral<Val>())>
+                constexpr
                 auto operator()(Val to) const
                 RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
                 (
@@ -54,12 +56,14 @@ namespace ranges
 
             #ifndef RANGES_DOXYGEN_INVOKED
                 template<typename Val, CONCEPT_REQUIRES_(!Integral<Val>())>
+                constexpr
                 void operator()(Val) const
                 {
                     CONCEPT_ASSERT_MSG(Integral<Val>(),
                         "The object passed to view::indices must be Integral");
                 }
                 template<typename Val, CONCEPT_REQUIRES_(!Integral<Val>())>
+                constexpr
                 void operator()(Val, Val) const
                 {
                     CONCEPT_ASSERT_MSG(Integral<Val>(),
@@ -73,6 +77,7 @@ namespace ranges
               : iota_view<std::ptrdiff_t>
             {
                 template<typename Val, CONCEPT_REQUIRES_(Integral<Val>())>
+                constexpr
                 auto operator()(Val from, Val to) const
                 RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
                 (
@@ -82,6 +87,7 @@ namespace ranges
 
                 template<typename Val, typename Self = closed_indices_fn,
                     CONCEPT_REQUIRES_(Integral<Val>())>
+                constexpr
                 auto operator()(Val to) const
                 RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
                 (
@@ -90,12 +96,14 @@ namespace ranges
 
             #ifndef RANGES_DOXYGEN_INVOKED
                 template<typename Val, CONCEPT_REQUIRES_(!Integral<Val>())>
+                constexpr
                 void operator()(Val) const
                 {
                     CONCEPT_ASSERT_MSG(Integral<Val>(),
                         "The object passed to view::closed_indices must be Integral");
                 }
                 template<typename Val, CONCEPT_REQUIRES_(!Integral<Val>())>
+                constexpr
                 void operator()(Val, Val) const
                 {
                     CONCEPT_ASSERT_MSG(Integral<Val>(),

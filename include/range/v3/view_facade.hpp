@@ -61,6 +61,7 @@ namespace ranges
             using view_facade_t = view_facade;
             using view_interface<Derived, Cardinality>::derived;
             // Default implementations
+            constexpr
             Derived begin_cursor() const
             {
                 return derived();
@@ -71,17 +72,20 @@ namespace ranges
             }
         public:
             template<typename D = Derived, CONCEPT_REQUIRES_(Same<D, Derived>())>
+            constexpr
             detail::facade_iterator_t<D> begin()
             {
                 return {range_access::begin_cursor(derived(), 42)};
             }
             /// \overload
             template<typename D = Derived, CONCEPT_REQUIRES_(Same<D, Derived>())>
+            constexpr
             detail::facade_iterator_t<D const> begin() const
             {
                 return {range_access::begin_cursor(derived(), 42)};
             }
             template<typename D = Derived, CONCEPT_REQUIRES_(Same<D, Derived>())>
+            constexpr
             detail::facade_sentinel_t<D> end()
             {
                 return static_cast<detail::facade_sentinel_t<D>>(
@@ -89,6 +93,7 @@ namespace ranges
             }
             /// \overload
             template<typename D = Derived, CONCEPT_REQUIRES_(Same<D, Derived>())>
+            constexpr
             detail::facade_sentinel_t<D const> end() const
             {
                 return static_cast<detail::facade_sentinel_t<D const>>(

@@ -33,6 +33,7 @@ namespace ranges
             struct null_pipe
             {
                 template<typename Rng>
+                constexpr
                 void operator()(Rng &&) const
                 {}
             };
@@ -49,6 +50,7 @@ namespace ranges
                 struct impl
                 {
                     template<typename...Ts, typename V = View>
+                    constexpr
                     static auto bind(Ts &&...ts)
                     RANGES_DECLTYPE_AUTO_RETURN
                     (
@@ -60,6 +62,7 @@ namespace ranges
             struct make_view_fn
             {
                 template<typename Fun>
+                constexpr
                 view<Fun> operator()(Fun fun) const
                 {
                     return {std::move(fun)};
@@ -88,6 +91,7 @@ namespace ranges
                 // Piping requires range arguments or lvalue containers.
                 template<typename Rng, typename Vw,
                     CONCEPT_REQUIRES_(ViewConcept<Rng>())>
+                constexpr
                 static auto pipe(Rng && rng, Vw && v)
                 RANGES_DECLTYPE_AUTO_RETURN
                 (
@@ -98,6 +102,7 @@ namespace ranges
                 // For better error messages:
                 template<typename Rng, typename Vw,
                     CONCEPT_REQUIRES_(!ViewConcept<Rng>())>
+                constexpr
                 static void pipe(Rng &&, Vw &&)
                 {
                     CONCEPT_ASSERT_MSG(Range<Rng>(),
@@ -113,14 +118,15 @@ namespace ranges
             #endif
 
             public:
-                view() = default;
-                view(View a)
+                constexpr view() = default;
+                constexpr view(View a)
                   : view_(std::move(a))
                 {}
 
                 // Calling directly requires View arguments or lvalue containers.
                 template<typename Rng, typename...Rest,
                     CONCEPT_REQUIRES_(ViewConcept<Rng, Rest...>())>
+                constexpr
                 auto operator()(Rng && rng, Rest &&... rest) const
                 RANGES_DECLTYPE_AUTO_RETURN
                 (
@@ -129,6 +135,7 @@ namespace ranges
 
                 // Currying overload.
                 template<typename...Ts, typename V = View>
+                constexpr
                 auto operator()(Ts &&... ts) const
                 RANGES_DECLTYPE_AUTO_RETURN
                 (

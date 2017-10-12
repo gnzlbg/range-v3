@@ -11,6 +11,7 @@
 //
 
 #include <range/v3/core.hpp>
+#include <range/v3/algorithm/equal.hpp>
 #include <range/v3/view/iota.hpp>
 #include <range/v3/view/indices.hpp>
 #include <range/v3/view/take.hpp>
@@ -81,6 +82,18 @@ void test_wrap_around() {
     models<concepts::BoundedView>(aux::copy(rng3));
     CHECK(ranges::size(rng3) == std::size_t(6));
     ::check_equal(rng3, {U(max - 2), U(max - 1), max, U(0), U(1), U(2)});
+}
+
+RANGES_CXX14_CONSTEXPR
+bool test_constexpr() {
+    using namespace ranges;
+    int a[4] = {0, 1, 2, 3};
+
+    if (!ranges::equal(a, view::ints(0, 4))) { return false; }
+    if (!ranges::equal(a, view::indices(0, 4))) { return false; }
+    if (!ranges::equal(a, view::closed_indices(0, 3))) { return false; }
+
+    return true;
 }
 
 int main()
@@ -176,6 +189,10 @@ int main()
         ::check_equal(view::indices(10), {0,1,2,3,4,5,6,7,8,9});
         ::check_equal(view::closed_indices(10), {0,1,2,3,4,5,6,7,8,9,10});
     }
+
+#if RANGES_CXX_CONSTEXPR >= RANGES_CXX_CONSTEXPR_14
+    static_assert(test_constexpr(), "");
+#endif
 
     return ::test_result();
 }

@@ -136,6 +136,7 @@ namespace ranges
 
             template<typename To, typename From,
                 CONCEPT_REQUIRES_(SizedIncrementableSentinel<To, From>())>
+            constexpr
             auto iota_minus_(To const &to, From const &from)
             RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
             (
@@ -144,6 +145,7 @@ namespace ranges
 
             template<typename Val,
                 CONCEPT_REQUIRES_(SignedIntegral<Val>())>
+            constexpr
             iota_difference_t<Val> iota_minus_(Val const &v0, Val const &v1)
             {
                 using D = iota_difference_t<Val>;
@@ -152,6 +154,7 @@ namespace ranges
 
             template<typename Val,
                 CONCEPT_REQUIRES_(UnsignedIntegral<Val>())>
+            constexpr
             iota_difference_t<Val> iota_minus_(Val const &v0, Val const &v1)
             {
                 using D = iota_difference_t<Val>;
@@ -211,6 +214,7 @@ namespace ranges
 
             template<typename Val,
                 typename C = common_type_t<Val, iota_difference_t<Val>>>
+            constexpr
             auto iota_plus_(Val const &v, iota_difference_t<Val> n, std::true_type)
             RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
             (
@@ -218,6 +222,7 @@ namespace ranges
             )
 
             template<typename Val>
+            constexpr
             auto iota_plus_(Val const &v, iota_difference_t<Val> n, std::false_type)
             RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
             (
@@ -225,6 +230,7 @@ namespace ranges
             )
 
             template<typename Val>
+            constexpr
             auto iota_plus(Val const &v, iota_difference_t<Val> n)
             RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
             (
@@ -249,11 +255,13 @@ namespace ranges
             To to_;
             bool done_ = false;
 
+            RANGES_CXX14_CONSTEXPR
             From read() const
             {
                 RANGES_EXPECT(!done_);
                 return from_;
             }
+            RANGES_CXX14_CONSTEXPR
             void next()
             {
                 if(from_ == to_)
@@ -261,16 +269,19 @@ namespace ranges
                 else
                     ++from_;
             }
+            constexpr
             bool equal(default_sentinel) const
             {
                 return done_;
             }
             CONCEPT_REQUIRES(Incrementable<From>())
+            constexpr
             bool equal(closed_iota_view const &that) const
             {
                 return that.from_ == from_ && that.done_ == done_;
             }
             CONCEPT_REQUIRES(BidirectionalIncrementable<From>())
+            RANGES_CXX14_CONSTEXPR
             void prev()
             {
                 if(done_)
@@ -296,45 +307,54 @@ namespace ranges
             From from_;
             To to_;
 
+            RANGES_CXX14_CONSTEXPR
             From read() const
             {
                 return from_;
             }
+            RANGES_CXX14_CONSTEXPR
             void next()
             {
                 ++from_;
             }
+            constexpr
             bool equal(default_sentinel) const
             {
                 return from_ == to_;
             }
             CONCEPT_REQUIRES(Incrementable<From>())
+            constexpr
             bool equal(iota_view const &that) const
             {
                 return that.from_ == from_;
             }
             CONCEPT_REQUIRES(BidirectionalIncrementable<From>())
+            RANGES_CXX14_CONSTEXPR
             void prev()
             {
                 --from_;
             }
             CONCEPT_REQUIRES(SizedIncrementableSentinel<To, From>())
+            RANGES_CXX14_CONSTEXPR
             void check_advance_(difference_type_ n)
             {
                 detail::ignore_unused(n);
                 RANGES_EXPECT(detail::iota_minus_(to_, from_) >= n);
             }
             template<typename = void>
+            RANGES_CXX14_CONSTEXPR
             void check_advance_(difference_type_) const
             {
             }
             CONCEPT_REQUIRES(RandomAccessIncrementable<From>())
+            RANGES_CXX14_CONSTEXPR
             void advance(difference_type_ n)
             {
                 this->check_advance_(n);
                 from_ = detail::iota_plus(from_, n);
             }
             CONCEPT_REQUIRES(RandomAccessIncrementable<From>())
+            RANGES_CXX14_CONSTEXPR
             difference_type_ distance_to(iota_view const &that) const
             {
                 return detail::iota_minus_(that.from_, from_);
@@ -357,10 +377,12 @@ namespace ranges
 
             From value_;
 
+            RANGES_CXX14_CONSTEXPR
             From read() const
             {
                 return value_;
             }
+            RANGES_CXX14_CONSTEXPR
             void next()
             {
                 ++value_;
@@ -370,21 +392,25 @@ namespace ranges
                 return false;
             }
             CONCEPT_REQUIRES(Incrementable<From>())
+            constexpr
             bool equal(iota_view const &that) const
             {
                 return that.value_ == value_;
             }
             CONCEPT_REQUIRES(BidirectionalIncrementable<From>())
+            RANGES_CXX14_CONSTEXPR
             void prev()
             {
                 --value_;
             }
             CONCEPT_REQUIRES(RandomAccessIncrementable<From>())
+            RANGES_CXX14_CONSTEXPR
             void advance(difference_type_ n)
             {
                 value_ = detail::iota_plus(value_, n);
             }
             CONCEPT_REQUIRES(RandomAccessIncrementable<From>())
+            RANGES_CXX14_CONSTEXPR
             difference_type_ distance_to(iota_view const &that) const
             {
                 return detail::iota_minus_(that.value_, value_);
@@ -402,6 +428,7 @@ namespace ranges
             {
             private:
                 template<typename From>
+                RANGES_CXX14_CONSTEXPR
                 static detail::take_exactly_view_<iota_view<From>, true>
                 impl(From from, From to, concepts::RandomAccessIncrementable *)
                 {
@@ -409,6 +436,7 @@ namespace ranges
                     return {iota_view<From>{std::move(from)}, n};
                 }
                 template<typename From, typename To>
+                RANGES_CXX14_CONSTEXPR
                 static iota_view<From, To>
                 impl(From from, To to, concepts::WeaklyIncrementable *)
                 {
@@ -417,11 +445,13 @@ namespace ranges
             public:
                 template<typename From,
                     CONCEPT_REQUIRES_(WeaklyIncrementable<From>())>
+                RANGES_CXX14_CONSTEXPR
                 iota_view<From> operator()(From value) const
                 {
                     return iota_view<From>{std::move(value)};
                 }
                 template<typename From, typename To>
+                RANGES_CXX14_CONSTEXPR
                 meta::if_c<
                     WeaklyIncrementable<From>() && WeaklyEqualityComparable<From, To>(),
                     meta::if_<
@@ -433,6 +463,7 @@ namespace ranges
             #ifndef RANGES_DOXYGEN_INVOKED
                 template<typename From,
                     CONCEPT_REQUIRES_(!WeaklyIncrementable<From>())>
+                RANGES_CXX14_CONSTEXPR
                 void operator()(From) const
                 {
                     CONCEPT_ASSERT_MSG(WeaklyIncrementable<From>(),
@@ -443,6 +474,7 @@ namespace ranges
                 template<typename From, typename To,
                     CONCEPT_REQUIRES_(!(WeaklyIncrementable<From>() &&
                         WeaklyEqualityComparable<From, To>()))>
+                RANGES_CXX14_CONSTEXPR
                 void operator()(From, To) const
                 {
                     CONCEPT_ASSERT_MSG(WeaklyIncrementable<From>(),
@@ -457,6 +489,7 @@ namespace ranges
             };
 
             template<typename From, typename To>
+            RANGES_CXX14_CONSTEXPR
             meta::if_c<
                 WeaklyIncrementable<From>() && WeaklyEqualityComparable<From, To>(),
                 meta::if_<
@@ -475,6 +508,7 @@ namespace ranges
             {
             private:
                 template<typename From>
+                RANGES_CXX14_CONSTEXPR
                 static detail::take_exactly_view_<iota_view<From>, true>
                 impl(From from, From to, concepts::RandomAccessIncrementable *)
                 {
@@ -484,6 +518,7 @@ namespace ranges
                     };
                 }
                 template<typename From, typename To>
+                RANGES_CXX14_CONSTEXPR
                 static closed_iota_view<From, To>
                 impl(From from, To to, concepts::WeaklyIncrementable *)
                 {
@@ -493,6 +528,7 @@ namespace ranges
                 template<typename From, typename To,
                     CONCEPT_REQUIRES_(WeaklyIncrementable<From>() &&
                         WeaklyEqualityComparable<From, To>())>
+                RANGES_CXX14_CONSTEXPR
                 meta::if_<
                     meta::and_<RandomAccessIncrementable<From>, Same<From, To>>,
                     detail::take_exactly_view_<iota_view<From>, true>,
@@ -508,6 +544,7 @@ namespace ranges
                 template<typename From, typename To,
                     CONCEPT_REQUIRES_(!(WeaklyIncrementable<From>() &&
                         WeaklyEqualityComparable<From, To>()))>
+                RANGES_CXX14_CONSTEXPR
                 void operator()(From, To) const
                 {
                     CONCEPT_ASSERT_MSG(WeaklyIncrementable<From>(),
@@ -536,12 +573,14 @@ namespace ranges
 
                 template<typename Val,
                     CONCEPT_REQUIRES_(Integral<Val>())>
+                RANGES_CXX14_CONSTEXPR
                 iota_view<Val> operator()(Val value) const
                 {
                     return iota_view<Val>{value};
                 }
 
                 template<typename Val, CONCEPT_REQUIRES_(Integral<Val>())>
+                RANGES_CXX14_CONSTEXPR
                 auto operator()(Val from, Val to) const
                 RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
                 (
@@ -552,6 +591,7 @@ namespace ranges
             #ifndef RANGES_DOXYGEN_INVOKED
                 template<typename Val,
                     CONCEPT_REQUIRES_(!Integral<Val>())>
+                RANGES_CXX14_CONSTEXPR
                 void operator()(Val) const
                 {
                     CONCEPT_ASSERT_MSG(Integral<Val>(),
@@ -559,6 +599,7 @@ namespace ranges
                 }
                 template<typename Val,
                     CONCEPT_REQUIRES_(!Integral<Val>())>
+                RANGES_CXX14_CONSTEXPR
                 void operator()(Val, Val) const
                 {
                     CONCEPT_ASSERT_MSG(Integral<Val>(),
@@ -572,6 +613,7 @@ namespace ranges
                 template<typename Val,
                     CONCEPT_REQUIRES_(Integral<Val>())>
                 RANGES_DEPRECATED("view::closed_ints is deprecated; use view::closed_indices instead!")
+                RANGES_CXX14_CONSTEXPR
                 detail::take_exactly_view_<iota_view<Val>, true> operator()(Val from, Val to) const
                 {
                     return {iota_view<Val>{from}, detail::ints_closed_distance_(from, to)};
@@ -579,6 +621,7 @@ namespace ranges
             #ifndef RANGES_DOXYGEN_INVOKED
                 template<typename Val,
                     CONCEPT_REQUIRES_(!Integral<Val>())>
+                RANGES_CXX14_CONSTEXPR
                 void operator()(Val, Val) const
                 {
                     CONCEPT_ASSERT_MSG(Integral<Val>(),

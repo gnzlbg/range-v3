@@ -81,16 +81,18 @@ test(Iter first, Sent last, const T& value, Proj proj = Proj{})
 }
 
 template<class Iter, class Sent = Iter>
+RANGES_CXX14_CONSTEXPR
 bool
 test()
 {
     using namespace ranges::view;
-    static constexpr unsigned M = 10;
-    std::vector<int> v;
-    auto input = ints | take(100) | transform([](int i){return repeat_n(i,M);}) | join;
-    ranges::copy(input, ranges::back_inserter(v));
+    constexpr unsigned N = 100;
+    constexpr unsigned M = 10;
+    int v[M * N]{-1};
+    auto input = ints | take(N) | transform([](int i){return repeat_n(i,M);}) | join;
+    ranges::copy(input, v);
     for (int x = 0; x <= (int)M; ++x)
-        if (!test(Iter(v.data()), Sent(v.data()+v.size()), x)) { return false; }
+        if (!test(Iter(v), Sent(v + M * N), x)) { return false; }
 
     return true;
 }
@@ -113,6 +115,9 @@ int main()
 #endif
 
     CHECK(test<forward_iterator<const int*> >());
+#if RANGES_CXX_CONSTEXPR >= RANGES_CXX_CONSTEXPR_14
+    static_assert(test<forward_iterator<const int*> >(), "");
+#endif
     CHECK(test<bidirectional_iterator<const int*> >());
     CHECK(test<random_access_iterator<const int*> >());
     CHECK(test<const int*>());
