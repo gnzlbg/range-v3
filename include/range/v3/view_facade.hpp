@@ -72,7 +72,7 @@ namespace ranges
             }
         public:
             template<typename D = Derived, CONCEPT_REQUIRES_(Same<D, Derived>())>
-            constexpr
+            RANGES_CXX14_CONSTEXPR
             detail::facade_iterator_t<D> begin()
             {
                 return {range_access::begin_cursor(derived(), 42)};
@@ -85,7 +85,7 @@ namespace ranges
                 return {range_access::begin_cursor(derived(), 42)};
             }
             template<typename D = Derived, CONCEPT_REQUIRES_(Same<D, Derived>())>
-            constexpr
+            RANGES_CXX14_CONSTEXPR
             detail::facade_sentinel_t<D> end()
             {
                 return static_cast<detail::facade_sentinel_t<D>>(

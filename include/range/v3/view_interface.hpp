@@ -65,7 +65,7 @@ namespace ranges
           : basic_view<Cardinality>
         {
         protected:
-            constexpr
+            RANGES_CXX14_CONSTEXPR
             Derived & derived()
             {
                 CONCEPT_ASSERT(DerivedFrom<Derived, view_interface>());

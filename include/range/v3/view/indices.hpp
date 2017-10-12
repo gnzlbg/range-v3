@@ -56,14 +56,14 @@ namespace ranges
 
             #ifndef RANGES_DOXYGEN_INVOKED
                 template<typename Val, CONCEPT_REQUIRES_(!Integral<Val>())>
-                constexpr
+                RANGES_CXX14_CONSTEXPR
                 void operator()(Val) const
                 {
                     CONCEPT_ASSERT_MSG(Integral<Val>(),
                         "The object passed to view::indices must be Integral");
                 }
                 template<typename Val, CONCEPT_REQUIRES_(!Integral<Val>())>
-                constexpr
+                RANGES_CXX14_CONSTEXPR
                 void operator()(Val, Val) const
                 {
                     CONCEPT_ASSERT_MSG(Integral<Val>(),
@@ -96,14 +96,14 @@ namespace ranges
 
             #ifndef RANGES_DOXYGEN_INVOKED
                 template<typename Val, CONCEPT_REQUIRES_(!Integral<Val>())>
-                constexpr
+                RANGES_CXX14_CONSTEXPR
                 void operator()(Val) const
                 {
                     CONCEPT_ASSERT_MSG(Integral<Val>(),
                         "The object passed to view::closed_indices must be Integral");
                 }
                 template<typename Val, CONCEPT_REQUIRES_(!Integral<Val>())>
-                constexpr
+                RANGES_CXX14_CONSTEXPR
                 void operator()(Val, Val) const
                 {
                     CONCEPT_ASSERT_MSG(Integral<Val>(),

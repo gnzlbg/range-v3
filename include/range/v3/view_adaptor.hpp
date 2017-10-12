@@ -479,7 +479,7 @@ namespace ranges
             constexpr view_adaptor(BaseRng && rng)
               : rng_(view::all(static_cast<BaseRng&&>(rng)))
             {}
-            constexpr
+            RANGES_CXX14_CONSTEXPR
             base_range_t & base()
             {
                 return rng_;

@@ -55,12 +55,13 @@ namespace ranges
 
             public:
                 constexpr take_exactly_view_() = default;
-                constexpr take_exactly_view_(Rng rng, difference_type_ n)
+                RANGES_CXX14_CONSTEXPR
+                take_exactly_view_(Rng rng, difference_type_ n)
                   : rng_(std::move(rng)), n_(n)
                 {
                     RANGES_EXPECT(n >= 0);
                 }
-                constexpr
+                RANGES_CXX14_CONSTEXPR
                 counted_iterator<iterator_t<Rng>> begin()
                 {
                     return {ranges::begin(rng_), n_};
@@ -82,7 +83,7 @@ namespace ranges
                 {
                     return static_cast<range_size_type_t<Rng>>(n_);
                 }
-                constexpr
+                RANGES_CXX14_CONSTEXPR
                 Rng & base()
                 {
                     return rng_;
@@ -104,18 +105,19 @@ namespace ranges
                 difference_type_ n_;
             public:
                 constexpr take_exactly_view_() = default;
-                constexpr take_exactly_view_(Rng rng, difference_type_ n)
+                RANGES_CXX14_CONSTEXPR
+                take_exactly_view_(Rng rng, difference_type_ n)
                   : rng_(std::move(rng)), n_(n)
                 {
                     RANGES_EXPECT(n >= 0);
                     RANGES_EXPECT(!SizedRange<Rng>() || n <= ranges::distance(rng_));
                 }
-                constexpr
+                RANGES_CXX14_CONSTEXPR
                 iterator_t<Rng> begin()
                 {
                     return ranges::begin(rng_);
                 }
-                constexpr
+                RANGES_CXX14_CONSTEXPR
                 iterator_t<Rng> end()
                 {
                     return next(ranges::begin(rng_), n_);
@@ -139,7 +141,7 @@ namespace ranges
                 {
                     return static_cast<range_size_type_t<Rng>>(n_);
                 }
-                constexpr
+                RANGES_CXX14_CONSTEXPR
                 Rng & base()
                 {
                     return rng_;
@@ -215,7 +217,7 @@ namespace ranges
             #ifndef RANGES_DOXYGEN_INVOKED
                 template<typename Rng, typename T,
                     CONCEPT_REQUIRES_(!InputRange<Rng>())>
-                constexpr
+                RANGES_CXX14_CONSTEXPR
                 void operator()(Rng &&, T &&) const
                 {
                     CONCEPT_ASSERT_MSG(InputRange<T>(),

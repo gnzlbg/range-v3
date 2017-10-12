@@ -33,7 +33,7 @@ namespace ranges
             struct null_pipe
             {
                 template<typename Rng>
-                constexpr
+                RANGES_CXX14_CONSTEXPR
                 void operator()(Rng &&) const
                 {}
             };
@@ -102,7 +102,7 @@ namespace ranges
                 // For better error messages:
                 template<typename Rng, typename Vw,
                     CONCEPT_REQUIRES_(!ViewConcept<Rng>())>
-                constexpr
+                RANGES_CXX14_CONSTEXPR
                 static void pipe(Rng &&, Vw &&)
                 {
                     CONCEPT_ASSERT_MSG(Range<Rng>(),

@@ -531,7 +531,7 @@ namespace ranges
             // value_type (needs no impl)
             template<typename ...Its>
             [[noreturn]]
-            constexpr
+            RANGES_CXX14_CONSTEXPR
             auto operator()(copy_tag, Its...) const ->
                 result_of_t<Fn &(decltype(*std::declval<Its>())...)>
             {
@@ -540,7 +540,7 @@ namespace ranges
 
             // Reference
             template<typename ...Its>
-            constexpr
+            RANGES_CXX14_CONSTEXPR
             auto operator()(Its ...its)
             RANGES_DECLTYPE_NOEXCEPT(invoke(std::declval<Fn &>(), *its...))
             {
@@ -556,7 +556,7 @@ namespace ranges
 
             // Rvalue reference
             template<typename ...Its>
-            constexpr
+            RANGES_CXX14_CONSTEXPR
             auto operator()(move_tag, Its ...its)
                 noexcept(noexcept(aux::move(invoke(std::declval<Fn &>(), *its...)))) ->
                 aux::move_t<decltype(invoke(std::declval<Fn &>(), *its...))>
@@ -879,7 +879,7 @@ namespace ranges
                   : bind_(std::move(b))
                 {}
                 template<typename...Ts>
-                constexpr
+                RANGES_CXX14_CONSTEXPR
                 auto operator()(Ts &&...ts)
                 RANGES_DECLTYPE_AUTO_RETURN
                 (

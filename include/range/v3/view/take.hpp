@@ -64,19 +64,19 @@ namespace ranges
                 }
             };
 
-            constexpr
+            RANGES_CXX14_CONSTEXPR
             adaptor<false> begin_adaptor()
             {
                 return {};
             }
-            constexpr
+            RANGES_CXX14_CONSTEXPR
             sentinel_adaptor<false> end_adaptor()
             {
                 return {};
             }
             template<typename BaseRng = Rng,
                 CONCEPT_REQUIRES_(Range<BaseRng const>())>
-            constexpr
+            RANGES_CXX14_CONSTEXPR
             adaptor<true> begin_adaptor()
             {
                 return {};
