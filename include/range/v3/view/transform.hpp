@@ -75,14 +75,17 @@ namespace ranges
                 using value_type =
                     detail::decay_t<result_of_t<Fun&(copy_tag, iterator_t<Rng> &&)>>;
                 adaptor() = default;
+                RANGES_CXX14_CONSTEXPR
                 adaptor(fun_ref_ fun)
                   : fun_(std::move(fun))
                 {}
+                RANGES_CXX14_CONSTEXPR
                 auto read(iterator_t<Rng> it) const
                 RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
                 (
                     invoke(fun_, it)
                 )
+                RANGES_CXX14_CONSTEXPR
                 auto iter_move(iterator_t<Rng> it) const
                 RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
                 (
@@ -90,26 +93,31 @@ namespace ranges
                 )
             };
 
+            RANGES_CXX14_CONSTEXPR
             adaptor<false> begin_adaptor()
             {
                 return {fun_};
             }
+            RANGES_CXX14_CONSTEXPR
             meta::if_<use_sentinel_t, adaptor_base, adaptor<false>> end_adaptor()
             {
                 return {fun_};
             }
             CONCEPT_REQUIRES(Invocable<Fun const&, iterator_t<Rng>>())
+            RANGES_CXX14_CONSTEXPR
             adaptor<true> begin_adaptor() const
             {
                 return {fun_};
             }
             CONCEPT_REQUIRES(Invocable<Fun const&, iterator_t<Rng>>())
+            RANGES_CXX14_CONSTEXPR
             meta::if_<use_sentinel_t, adaptor_base, adaptor<true>> end_adaptor() const
             {
                 return {fun_};
             }
         public:
             iter_transform_view() = default;
+            RANGES_CXX14_CONSTEXPR
             iter_transform_view(Rng rng, Fun fun)
               : iter_transform_view::view_adaptor{std::move(rng)}
               , fun_(std::move(fun))
@@ -131,6 +139,7 @@ namespace ranges
           : iter_transform_view<Rng, indirected<Fun>>
         {
             transform_view() = default;
+            RANGES_CXX14_CONSTEXPR
             transform_view(Rng rng, Fun fun)
               : iter_transform_view<Rng, indirected<Fun>>{std::move(rng),
                     indirect(std::move(fun))}
@@ -167,6 +176,7 @@ namespace ranges
                 sentinel_t<Rng2> end2_;
             public:
                 sentinel() = default;
+                RANGES_CXX14_CONSTEXPR
                 sentinel(detail::any, sentinel_t<Rng1> end1, sentinel_t<Rng2> end2)
                   : end1_(std::move(end1)), end2_(std::move(end2))
                 {}
@@ -190,19 +200,23 @@ namespace ranges
                         iterator_t<Rng2>)>>;
 
                 cursor() = default;
+                RANGES_CXX14_CONSTEXPR
                 cursor(fun_ref_ fun, iterator_t<Rng1> it1, iterator_t<Rng2> it2)
                   : fun_(std::move(fun)), it1_(std::move(it1)), it2_(std::move(it2))
                 {}
+                constexpr
                 auto read() const
                 RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
                 (
                     invoke(fun_, it1_, it2_)
                 )
+                RANGES_CXX14_CONSTEXPR
                 void next()
                 {
                     ++it1_;
                     ++it2_;
                 }
+                constexpr
                 bool equal(cursor const &that) const
                 {
                     // By returning true if *any* of the iterators are equal, we allow
@@ -210,6 +224,7 @@ namespace ranges
                     // one reaches the end.
                     return it1_ == that.it1_ || it2_ == that.it2_;
                 }
+                constexpr
                 bool equal(sentinel const &s) const
                 {
                     // By returning true if *any* of the iterators are equal, we allow
@@ -218,12 +233,14 @@ namespace ranges
                     return it1_ == s.end1_ || it2_ == s.end2_;
                 }
                 CONCEPT_REQUIRES(BidirectionalRange<Rng1>() && BidirectionalRange<Rng2>())
+                RANGES_CXX14_CONSTEXPR
                 void prev()
                 {
                     --it1_;
                     --it2_;
                 }
                 CONCEPT_REQUIRES(RandomAccessRange<Rng1>() && RandomAccessRange<Rng2>())
+                RANGES_CXX14_CONSTEXPR
                 void advance(difference_type n)
                 {
                     ranges::advance(it1_, n);
@@ -232,6 +249,7 @@ namespace ranges
                 CONCEPT_REQUIRES(
                     SizedSentinel<iterator_t<Rng1>, iterator_t<Rng1>>() &&
                     SizedSentinel<iterator_t<Rng2>, iterator_t<Rng2>>())
+                RANGES_CXX14_CONSTEXPR
                 difference_type distance_to(cursor const &that) const
                 {
                     // Return the smallest distance (in magnitude) of any of the iterator
@@ -239,6 +257,7 @@ namespace ranges
                     difference_type d1 = that.it1_ - it1_, d2 = that.it2_ - it2_;
                     return 0 < d1 ? ranges::min(d1, d2) : ranges::max(d1, d2);
                 }
+                RANGES_CXX14_CONSTEXPR
                 auto move() const
                 RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
                 (
@@ -253,21 +272,24 @@ namespace ranges
                         !SinglePass<iterator_t<Rng2>>(),
                     cursor,
                     sentinel>;
-
+            RANGES_CXX14_CONSTEXPR
             cursor begin_cursor()
             {
                 return {fun_, ranges::begin(rng1_), ranges::begin(rng2_)};
             }
+            RANGES_CXX14_CONSTEXPR
             end_cursor_t end_cursor()
             {
                 return {fun_, ranges::end(rng1_), ranges::end(rng2_)};
             }
             CONCEPT_REQUIRES(Range<Rng1 const>() && Range<Rng2 const>())
+            RANGES_CXX14_CONSTEXPR
             cursor begin_cursor() const
             {
                 return {fun_, ranges::begin(rng1_), ranges::begin(rng2_)};
             }
             CONCEPT_REQUIRES(Range<Rng1 const>() && Range<Rng2 const>())
+            RANGES_CXX14_CONSTEXPR
             end_cursor_t end_cursor() const
             {
                 return {fun_, ranges::end(rng1_), ranges::end(rng2_)};
@@ -281,6 +303,7 @@ namespace ranges
             }
         public:
             iter_transform2_view() = default;
+            RANGES_CXX14_CONSTEXPR
             iter_transform2_view(Rng1 rng1, Rng2 rng2, Fun fun)
               : fun_(std::move(fun))
               , rng1_(std::move(rng1))
@@ -310,6 +333,7 @@ namespace ranges
           : iter_transform2_view<Rng1, Rng2, indirected<Fun>>
         {
             transform2_view() = default;
+            RANGES_CXX14_CONSTEXPR
             transform2_view(Rng1 rng1, Rng2 rng2, Fun fun)
               : iter_transform2_view<Rng1, Rng2, indirected<Fun>>{std::move(rng1),
                     std::move(rng2), indirect(std::move(fun))}
@@ -349,6 +373,7 @@ namespace ranges
 
                 template<typename Rng, typename Fun,
                     CONCEPT_REQUIRES_(Concept<Rng, Fun>())>
+                constexpr
                 iter_transform_view<all_t<Rng>, Fun> operator()(Rng && rng, Fun fun) const
                 {
                     return {all(static_cast<Rng&&>(rng)), std::move(fun)};
@@ -356,6 +381,7 @@ namespace ranges
 
                 template<typename Rng1, typename Rng2, typename Fun,
                     CONCEPT_REQUIRES_(Concept2<Rng1, Rng2, Fun>())>
+                constexpr
                 iter_transform2_view<all_t<Rng1>, all_t<Rng2>, Fun>
                 operator()(Rng1 && rng1, Rng2 && rng2, Fun fun) const
                 {
@@ -365,6 +391,7 @@ namespace ranges
             #ifndef RANGES_DOXYGEN_INVOKED
                 template<typename Rng, typename Fun,
                     CONCEPT_REQUIRES_(!Concept<Rng, Fun>())>
+                RANGES_CXX14_CONSTEXPR
                 void operator()(Rng &&, Fun) const
                 {
                     CONCEPT_ASSERT_MSG(InputRange<Rng>(),
@@ -389,6 +416,7 @@ namespace ranges
 
                 template<typename Rng1, typename Rng2, typename Fun,
                     CONCEPT_REQUIRES_(!Concept2<Rng1, Rng2, Fun>())>
+                RANGES_CXX14_CONSTEXPR
                 void operator()(Rng1 &&, Rng2 &&, Fun) const
                 {
                     CONCEPT_ASSERT_MSG(InputRange<Rng1>(),
@@ -425,11 +453,12 @@ namespace ranges
             private:
                 friend view_access;
                 template<typename Fun>
+                constexpr
                 static auto bind(transform_fn transform, Fun fun)
                 RANGES_DECLTYPE_AUTO_RETURN
                 (
-                    make_pipeable(std::bind(transform, std::placeholders::_1,
-                        protect(std::move(fun))))
+                    make_pipeable(detail::bind1<transform_fn, Fun>
+                                  (transform, protect(std::move(fun))))
                 )
             public:
                 // Don't forget to update view::for_each whenever this set
@@ -453,6 +482,7 @@ namespace ranges
 
                 template<typename Rng, typename Fun,
                     CONCEPT_REQUIRES_(Concept<Rng, Fun>())>
+                constexpr
                 transform_view<all_t<Rng>, Fun> operator()(Rng && rng, Fun fun) const
                 {
                     return {all(static_cast<Rng&&>(rng)), std::move(fun)};
@@ -460,6 +490,7 @@ namespace ranges
 
                 template<typename Rng1, typename Rng2, typename Fun,
                     CONCEPT_REQUIRES_(Concept2<Rng1, Rng2, Fun>())>
+                constexpr
                 transform2_view<all_t<Rng1>, all_t<Rng2>, Fun>
                 operator()(Rng1 && rng1, Rng2 && rng2, Fun fun) const
                 {
@@ -470,6 +501,7 @@ namespace ranges
             #ifndef RANGES_DOXYGEN_INVOKED
                 template<typename Rng, typename Fun,
                     CONCEPT_REQUIRES_(!Concept<Rng, Fun>())>
+                RANGES_CXX14_CONSTEXPR
                 void operator()(Rng &&, Fun) const
                 {
                     CONCEPT_ASSERT_MSG(InputRange<Rng>(),
@@ -491,6 +523,7 @@ namespace ranges
 
                 template<typename Rng1, typename Rng2, typename Fun,
                     CONCEPT_REQUIRES_(!Concept2<Rng1, Rng2, Fun>())>
+                RANGES_CXX14_CONSTEXPR
                 void operator()(Rng1 &&, Rng2 &&, Fun) const
                 {
                     CONCEPT_ASSERT_MSG(InputRange<Rng1>(),

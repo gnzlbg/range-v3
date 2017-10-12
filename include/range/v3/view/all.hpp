@@ -35,6 +35,7 @@ namespace ranges
             {
             private:
                 template<typename T>
+                RANGES_CXX14_CONSTEXPR
                 static iterator_range<iterator_t<T>, sentinel_t<T>>
                 from_container(T & t, concepts::Range*, concepts::Sentinel*)
                 {
@@ -42,6 +43,7 @@ namespace ranges
                 }
 
                 template<typename T>
+                RANGES_CXX14_CONSTEXPR
                 static sized_iterator_range<iterator_t<T>, sentinel_t<T>>
                 from_container(T & t, concepts::SizedRange*, concepts::Sentinel*)
                 {
@@ -49,6 +51,7 @@ namespace ranges
                 }
 
                 template<typename T>
+                RANGES_CXX14_CONSTEXPR
                 static iterator_range<iterator_t<T>, sentinel_t<T>>
                 from_container(T & t, concepts::SizedRange*, concepts::SizedSentinel*)
                 {
@@ -59,6 +62,7 @@ namespace ranges
                 /// If it's a view already, pass it though.
                 template<typename T,
                     CONCEPT_REQUIRES_(View<uncvref_t<T>>())>
+                constexpr
                 static T from_range(T && t)
                 {
                     return static_cast<T&&>(t);
@@ -72,6 +76,7 @@ namespace ranges
                     typename S = sentinel_t<T>,
                     typename SIC = sized_range_concept<T>,
                     typename SIRC = sized_sentinel_concept<S, I>>
+                RANGES_CXX14_CONSTEXPR
                 static auto from_range(T && t) ->
                     decltype(all_fn::from_container(t, SIC(), SIRC()))
                 {
@@ -84,6 +89,7 @@ namespace ranges
             public:
                 template<typename T,
                     CONCEPT_REQUIRES_(Range<T>())>
+                RANGES_CXX14_CONSTEXPR
                 auto operator()(T && t) const ->
                     decltype(all_fn::from_range(static_cast<T&&>(t)))
                 {
@@ -92,6 +98,7 @@ namespace ranges
 
                 template<typename T,
                     CONCEPT_REQUIRES_(Range<T &>())>
+                RANGES_CXX14_CONSTEXPR
                 ranges::reference_wrapper<T> operator()(std::reference_wrapper<T> ref) const
                 {
                     return ranges::ref(ref.get());

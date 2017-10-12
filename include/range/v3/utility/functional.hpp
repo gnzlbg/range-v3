@@ -524,12 +524,15 @@ namespace ranges
             using box<Fn, indirected<Fn>>::get;
         public:
             indirected() = default;
+            RANGES_CXX14_CONSTEXPR
             indirected(Fn fn)
               : indirected::box(std::move(fn))
             {}
             // value_type (needs no impl)
             template<typename ...Its>
-            [[noreturn]] auto operator()(copy_tag, Its...) const ->
+            [[noreturn]]
+            constexpr
+            auto operator()(copy_tag, Its...) const ->
                 result_of_t<Fn &(decltype(*std::declval<Its>())...)>
             {
                 RANGES_EXPECT(false);
@@ -537,12 +540,14 @@ namespace ranges
 
             // Reference
             template<typename ...Its>
+            constexpr
             auto operator()(Its ...its)
             RANGES_DECLTYPE_NOEXCEPT(invoke(std::declval<Fn &>(), *its...))
             {
                 return invoke(get(), *its...);
             }
             template<typename ...Its>
+            constexpr
             auto operator()(Its ...its) const
             RANGES_DECLTYPE_NOEXCEPT(invoke(std::declval<Fn const &>(), *its...))
             {
@@ -551,6 +556,7 @@ namespace ranges
 
             // Rvalue reference
             template<typename ...Its>
+            constexpr
             auto operator()(move_tag, Its ...its)
                 noexcept(noexcept(aux::move(invoke(std::declval<Fn &>(), *its...)))) ->
                 aux::move_t<decltype(invoke(std::declval<Fn &>(), *its...))>
@@ -558,6 +564,7 @@ namespace ranges
                 return aux::move(invoke(get(), *its...));
             }
             template<typename ...Its>
+            constexpr
             auto operator()(move_tag, Its ...its) const
                 noexcept(noexcept(aux::move(invoke(std::declval<Fn const &>(), *its...)))) ->
                 aux::move_t<decltype(invoke(std::declval<Fn const &>(), *its...))>
@@ -867,10 +874,12 @@ namespace ranges
                 Bind bind_;
             public:
                 protect() = default;
+                RANGES_CXX14_CONSTEXPR
                 protect(Bind b)
                   : bind_(std::move(b))
                 {}
                 template<typename...Ts>
+                constexpr
                 auto operator()(Ts &&...ts)
                 RANGES_DECLTYPE_AUTO_RETURN
                 (
@@ -878,6 +887,7 @@ namespace ranges
                 )
                 /// \overload
                 template<typename...Ts>
+                constexpr
                 auto operator()(Ts &&...ts) const
                 RANGES_DECLTYPE_AUTO_RETURN
                 (
@@ -890,12 +900,14 @@ namespace ranges
         struct protect_fn
         {
             template<typename F, CONCEPT_REQUIRES_(std::is_bind_expression<uncvref_t<F>>())>
+            constexpr
             detail::protect<uncvref_t<F>> operator()(F && f) const
             {
                 return {static_cast<F&&>(f)};
             }
             /// \overload
             template<typename F, CONCEPT_REQUIRES_(!std::is_bind_expression<uncvref_t<F>>())>
+            constexpr
             F operator()(F && f) const
             {
                 return static_cast<F&&>(f);

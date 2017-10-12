@@ -14,6 +14,7 @@
 #include <iterator>
 #include <functional>
 #include <range/v3/core.hpp>
+#include <range/v3/algorithm/equal.hpp>
 #include <range/v3/view/transform.hpp>
 #include <range/v3/view/counted.hpp>
 #include <range/v3/view/reverse.hpp>
@@ -30,6 +31,17 @@ struct is_odd
         return (i % 2) == 1;
     }
 };
+
+RANGES_CXX14_CONSTEXPR
+bool
+test_constexpr() {
+  int a[4] = {1, 2, 3, 4};
+  int b[4] = {0, 1, 2, 3};
+  struct {
+    constexpr int operator()(int i) { return i + 1; }
+  } plus_one{};
+  return ranges::equal(a, b | ranges::view::transform(plus_one));
+}
 
 int main()
 {
@@ -177,6 +189,10 @@ int main()
         using T = std::tuple<std::string, std::string>;
         ::check_equal(rng, {T{"a","x"}, T{"b","y"}, T{"c","z"}});
     }
+
+#if RANGES_CXX_CONSTEXPR >= RANGES_CXX_CONSTEXPR_14
+    static_assert(test_constexpr(), "");
+#endif
 
     return test_result();
 }
