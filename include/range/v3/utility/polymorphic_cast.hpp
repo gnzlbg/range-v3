@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <meta/meta.hpp>
 #include <range/v3/detail/config.hpp>
+#include <range/v3/utility/addressof.hpp>
 
 namespace ranges
 {
@@ -33,7 +34,7 @@ namespace ranges
             auto &&result = static_cast<Target>(static_cast<Source &&>(x));
 #ifndef NDEBUG
             auto &&dresult = dynamic_cast<Target>(static_cast<Source &&>(x));
-            RANGES_ASSERT(std::addressof(dresult) == std::addressof(result));
+            RANGES_ASSERT(ranges::addressof(dresult) == ranges::addressof(result));
 #endif
             return static_cast<Target>(result);
         }

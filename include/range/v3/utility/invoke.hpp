@@ -20,6 +20,7 @@
 #include <utility>
 #include <meta/meta.hpp>
 #include <range/v3/detail/config.hpp>
+#include <range/v3/utility/addressof.hpp>
 #include <range/v3/utility/concepts.hpp>
 #include <range/v3/utility/static_const.hpp>
 
@@ -138,7 +139,7 @@ namespace ranges
                 T *t_ = nullptr;
                 constexpr reference_wrapper_() = default;
                 constexpr reference_wrapper_(T &t) noexcept
-                  : t_(std::addressof(t))
+                  : t_(ranges::addressof(t))
                 {}
                 constexpr reference_wrapper_(T &&) = delete;
                 constexpr T &get() const noexcept
@@ -157,7 +158,7 @@ namespace ranges
                 T *t_ = nullptr;
                 constexpr reference_wrapper_() = default;
                 constexpr reference_wrapper_(T &&t) noexcept
-                  : t_(std::addressof(t))
+                  : t_(ranges::addressof(t))
                 {}
                 constexpr T &&get() const noexcept
                 {

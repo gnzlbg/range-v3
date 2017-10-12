@@ -388,6 +388,13 @@ namespace ranges
 #define RANGES_CXX14_CONSTEXPR inline
 #endif
 
+#if RANGES_CXX_CONSTEXPR >= RANGES_CXX_CONSTEXPR_17
+#define RANGES_CXX17_CONSTEXPR constexpr
+#else
+#define RANGES_CXX17_CONSTEXPR inline
+#endif
+
+
 #ifdef NDEBUG
 #define RANGES_NDEBUG_CONSTEXPR constexpr
 #else

@@ -23,6 +23,7 @@
 #include <range/v3/range_traits.hpp>
 #include <range/v3/view_facade.hpp>
 #include <range/v3/detail/satisfy_boost_range.hpp>
+#include <range/v3/utility/addressof.hpp>
 #include <range/v3/utility/compressed_pair.hpp>
 #include <range/v3/utility/memory.hpp>
 #include <range/v3/view/all.hpp>
@@ -115,7 +116,7 @@ namespace ranges
                 any_ref() = default;
                 template<class T>
                 constexpr any_ref(T &obj) noexcept
-                  : obj_{std::addressof(obj)}
+                  : obj_{ranges::addressof(obj)}
 #ifndef NDEBUG
                   , info_{&typeid(rtti_tag<T>)}
 #endif
@@ -208,7 +209,7 @@ namespace ranges
 
                 any_input_cursor() = default;
                 constexpr any_input_cursor(any_input_view_interface<Ref> &view) noexcept
-                  : view_{std::addressof(view)}
+                  : view_{ranges::addressof(view)}
                 {}
                 Ref read() const { return view_->read(); }
                 void next() { view_->next(); }

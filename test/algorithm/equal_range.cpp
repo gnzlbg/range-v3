@@ -81,9 +81,7 @@ test(Iter first, Sent last, const T& value, Proj proj = Proj{})
 }
 
 template<class Iter, class Sent = Iter>
-RANGES_CXX14_CONSTEXPR
-bool
-test()
+bool test()
 {
     using namespace ranges::view;
     constexpr unsigned N = 100;
@@ -115,9 +113,6 @@ int main()
 #endif
 
     CHECK(test<forward_iterator<const int*> >());
-#if RANGES_CXX_CONSTEXPR >= RANGES_CXX_CONSTEXPR_14
-    static_assert(test<forward_iterator<const int*> >(), "");
-#endif
     CHECK(test<bidirectional_iterator<const int*> >());
     CHECK(test<random_access_iterator<const int*> >());
     CHECK(test<const int*>());
